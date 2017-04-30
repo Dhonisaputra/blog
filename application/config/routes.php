@@ -47,6 +47,7 @@ if(
 }
 
 $route['default_controller'] = "built_in_blog";
+$route['administrator'] = "built_in_blog/administrator";
 $route['404_override'] = '';
 
 

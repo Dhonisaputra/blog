@@ -50,30 +50,34 @@ class Article extends CI_Controller
 				'schedule_publish' => isset($post['article']['schedule_publish']) ? $post['article']['schedule_publish'] : null,
 				'post_status' => $post['article']['post_status'],
 				'published_time' => $post['article']['post_status'] == 'publish' ? date('Y-m-d H:i:s') : null,
-			),
-			$this->db
+			)
 		);
 		$id_post = $this->db->insert_id();
 		$hash_raw = $this->authentication->authorize['user_key'].'*'.$id_post;
 		$article_hash = $this->auth->encrypt($hash_raw, 'hashing', 'articles', true);
 		$setcronjob = '';
-		if($post['article']['set_schedule'] == true)
+		$cron = array('data' => array());
+		if(isset($post['article']['set_schedule']))
 		{
-			$str_time = strtotime($post['article']['schedule_publish']);
-			$date = Date('d', $str_time);
-			$month = Date('n', $str_time);
-			$hour = Date('G', $str_time);
-			$minute = Date('i', $str_time);
-			$token_url = urlencode(base_url('blog/publish_article').'?token='.$article_hash.'&using_auth=0');
-			$setcronjob = 'https://www.setcronjob.com/api/cron.add?token=cxo0l0ub0y5xhrsrchfoehxwvfqtjgo9&minute='.$minute.'&hour='.$hour.'&day='.$date.'&month='.$month.'&timezone=Asia/Jakarta&url='.$token_url;
-			$cron = file_get_contents($setcronjob);
-			$cron = json_decode($cron,true);
-		
+
+			if($post['article']['set_schedule'] == true)
+			{
+				$str_time = strtotime($post['article']['schedule_publish']);
+				$date = Date('d', $str_time);
+				$month = Date('n', $str_time);
+				$hour = Date('G', $str_time);
+				$minute = Date('i', $str_time);
+				$token_url = urlencode(base_url('blog/publish_article').'?token='.$article_hash.'&using_auth=0');
+				$setcronjob = 'https://www.setcronjob.com/api/cron.add?token=cxo0l0ub0y5xhrsrchfoehxwvfqtjgo9&minute='.$minute.'&hour='.$hour.'&day='.$date.'&month='.$month.'&timezone=Asia/Jakarta&url='.$token_url;
+				$cron = file_get_contents($setcronjob);
+				$cron = json_decode($cron,true);
+			
+			}
 		}
 		$this->model_post->update_post(
 			array(
 				'article_hash' => $article_hash,
-				'cron_id' => isset($cron['data'])? $cron['data']['id'] : null
+				'cron_id' => isset($post['article']['set_schedule'])? $cron['data']['id'] : null
 			), 
 			array(
 				'id_post' => $id_post
@@ -81,17 +85,20 @@ class Article extends CI_Controller
 			);
 
 
-		if(count($post['article']['categories']) > 0 && isset($post['article']['categories']))
+		if(isset($post['article']['categories']))
 		{
-			$post_categories = array();
-			foreach ($post['article']['categories'] as $key => $value) {
-				$post_categories[] = array('id_post' => $id_post, 'id_category' => $value);
-			}
-			$this->db->insert_batch('post_categories', $post_categories); 
+			if(count($post['article']['categories']) > 0)
+			{
+				$post_categories = array();
+				foreach ($post['article']['categories'] as $key => $value) {
+					$post_categories[] = array('id_post' => $id_post, 'id_category' => $value);
+				}
+				$this->db->insert_batch('post_categories', $post_categories); 
 
+			}	
 		}
 		echo json_encode(
-			array('insertId' => $id_post, 'setcronjob' => $setcronjob  )
+			array('insertId' => $id_post )
 		);
 
 	}

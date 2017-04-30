@@ -16,7 +16,7 @@ class Built_in_blog extends CI_Controller
 		$this->load->view('built_in_blog/index.html');
 	}
 
-	public function index()
+	public function administrator()
 	{
 		$this->load->view('built_in_blog/administrator.html');
 	}

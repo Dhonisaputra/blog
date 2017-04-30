@@ -87,6 +87,45 @@ class Install extends CI_Controller {
 	public function done(){
 		echo 'Installing done!';
 	}
+
+	public function facebook()
+	{
+		define('FACEBOOK_SDK_V4_SRC_DIR', APPPATH.'libraries/Facebook/src/Facebook/');
+		require_once(APPPATH.'libraries/Facebook/src/Facebook/autoload.php');
+		$fb = new Facebook\Facebook([
+		 'app_id' => '1065750993495095',
+		 'app_secret' => '176a0f6e0ce71e0b7a9b595a77cf1458',
+		 'default_graph_version' => 'v2.9',
+		]);
+
+		/*$linkData = [
+		 'link' => 'www.yoururl.com',
+		 'message' => 'Your message here'
+		];
+		$pageAccessToken ='yournonexpiringtoken';
+
+		try {
+		  // Returns a `Facebook\FacebookResponse` object
+		  $response = $fb->post('/me/feed', $linkData, '1065750993495095|176a0f6e0ce71e0b7a9b595a77cf1458');
+		} catch(Facebook\Exceptions\FacebookResponseException $e) {
+		  echo 'Graph returned an error: ' . $e->getMessage();
+		  exit;
+		} catch(Facebook\Exceptions\FacebookSDKException $e) {
+		  echo 'Facebook SDK returned an error: ' . $e->getMessage();
+		  exit;
+		}
+
+		$graphNode = $response->getGraphNode();
+
+		echo 'Posted with id: ' . $graphNode['id'];*/
+
+		$helper = $fb->getRedirectLoginHelper();
+
+		$permissions = ['publish_action', 'user_posts', 'manage_pages', 'publish_pages']; // Optional permissions
+		$loginUrl = $helper->getLoginUrl(base_url('install/facebook'), $permissions);
+
+		echo '<a href="' . htmlspecialchars($loginUrl) . '">Log in with Facebook!</a>';
+	}
 }
 
 /* End of file welcome.php */

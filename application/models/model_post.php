@@ -13,8 +13,8 @@ class Model_post extends CI_Model
 	{
 		$this->db->select($select, false);
 		$this->db->from('posts');
-		$this->db->join('post_categories', 'post_categories.id_post = posts.id_post');
-		$this->db->join('categories', 'post_categories.id_category = categories.id_category');
+		$this->db->join('post_categories', 'post_categories.id_post = posts.id_post','left');
+		$this->db->join('categories', 'post_categories.id_category = categories.id_category','left');
 		if(isset($where) && ( (is_array($where) && count($where) > 0) || (is_string($where) && $where != '') ) )
 		{
 			$this->db->where($where);
