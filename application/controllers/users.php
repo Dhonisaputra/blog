@@ -37,46 +37,47 @@ class Users extends CI_Controller
 		}
 
 		$post = $this->input->post();
-		$isExsist = $this->is_users_exist($post['user']['email']);
-		if( $isExsist == TRUE )
+		$isExsist = json_decode($this->is_users_exist($post['user']['email'],false),true );
+		if( $isExsist['code'] == 500 )
 		{
-			header('http/1.0 500 user has been exists!'); return false;
-		}
-		$e = $this->encrypt($post['user']);
-		$user = $this->users_model->new_users(array(
-				'username' 	=> $e['username'],
-				'email' 	=> $e['email'],
-				'password'	=> $e['password'],
-				'key_A' 		=> $e['key_A'],
-				'key_B' 		=> $e['key_B'],
-				'userlevel' 	=> $post['user']['userlevel'],
-			)
-		);
-		if($user->insert_id())
-		{
-			echo array('code'=>200);
+			echo json_encode(array('code'=>500));
 		}else
 		{
-			header('http/1.0 500 error on save user');
-			return false;
+			$e = $this->encrypt($post['user']);
+			$user = $this->users_model->new_users(array(
+					'username' 	=> $e['username'],
+					'email' 	=> $e['email'],
+					'password'	=> $e['password'],
+					'key_A' 		=> $e['key_A'],
+					'key_B' 		=> $e['key_B'],
+					'userlevel' 	=> $post['user']['userlevel'],
+				)
+			);
+			if($user['insert_id'] > 0)
+			{
+				echo json_encode(array('code'=>200, 'message' => 'user inserted'));
+			}else
+			{
+				echo json_encode(array('code'=>500, 'message' => 'user error on inserted'));
+			}
 		}
 	}
 
-	public function is_users_exist($email = '')
+	public function is_users_exist($email = FALSE, $ajax = true)
 	{
 
 		$post = $this->input->post();
-		$email = $email !== '' ? $email : $post['email'];
+		$email = $email == TRUE? $email : $post['email'];
 		$users = $this->users_model->get_users('*', array('email' => $email))->result_array();
 		if(count($users) > 0)
 		{
-			if($this->isAjax)
-			{
-				header('http/1.0 500 user exist');
-			}
-			return true;
+			$res = json_encode(array('code'=>500, 'message' => 'user exist'));
+			if($this->isAjax || $ajax){echo $res;}else{return $res;}
+		}else
+		{
+			$res = json_encode(array('code'=>200));
+			if($this->isAjax || $ajax){echo $res;}else{return $res;}
 		}
-		return false;
 	}
 	public function login()
 	{

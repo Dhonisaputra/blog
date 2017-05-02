@@ -71,7 +71,7 @@ class Users_model extends CI_Model
 			array('user_key' => $data['user_key'] ),
 			array('id_user' => $data['id_user'] )
 		);
-		return $data_result;
+		return array('insert_id' => $data['id_user']);
 	}
 
 	public function get_users($select='*',$where = array())

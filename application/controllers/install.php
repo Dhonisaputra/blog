@@ -30,9 +30,10 @@ class Install extends CI_Controller {
 		include(APPPATH.'config/server.php');
 		require_once(APPPATH.'libraries/profiling/Pengguna.php');
 		$this->auth = new Pengguna;
-
+		// $_POST = json_decode('{"hostname":"localhost","blog_key":"a8aDoFFBgYfuVPEx4kyeJe1KnZUi4qtx8NBtYcQhY.Mgb6Eo6MX8G","processing_server":"http:\/\/localhost\/projects\/blog\/built_in_blog","blog_server":"http:\/\/localhost\/projects\/blog\/built_in_blog","username":"root","password":"toor","database":"blog_1","remote_server":"http:\/\/localhost\/projects\/blog\/server_sudo\/","version":"1.0"}',true);
 		$post = $this->input->post();				
-		$connected = $this->authentication->set_db($post)->initialize();
+		$this->db = $this->authentication->set_db($post);
+		$connected = $this->db->initialize();
 		
 		if($connected)
 		{
@@ -47,13 +48,16 @@ class Install extends CI_Controller {
 			$text .='$server["database"] = "'.$post['database'].'";'."\n";
 			$text .='$server["blog_key"] = "'.$post['blog_key'].'";'."\n";
 
+			file_put_contents(BASEPATH.'certificate/tester.server.cert', json_encode($post));
 			$text = $this->auth->encrypt(json_encode($post), '@cert', '@blog', true);
 			file_put_contents(BASEPATH.'certificate/server.cert', $text);
 
-			$this->curl->simple_post('install/install_database');
+			// $this->curl->simple_post('install/');
+			$this->install_database();
+			echo json_encode(array('code'=>200));
 		}else
 		{
-			header('http/1.0 500 Error on Configuration database');
+			echo json_encode(array('code'=>500));
 		}
 	}
 
@@ -62,7 +66,7 @@ class Install extends CI_Controller {
 		// Temporary variable, used to store current query
 		$templine = '';
 		// Read in entire file
-		$lines = file(base_url('locker/database/default.sql'));
+		$lines = file(APPPATH.'config/default.sql');
 		// Loop through each line
 		foreach ($lines as $line)
 		{
