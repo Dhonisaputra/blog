@@ -27,6 +27,20 @@ class Blog extends CI_Controller {
 		// echo json_encode($server);
 
 	}
+
+	public function uninstall()
+	{
+		$this->load->helper('file');
+		$this->load->helper('directory');
+
+		// scan FC path
+		// $dir = scandir(FCPATH);
+		$dir = directory_map(FCPATH,1);
+		foreach ($dir as $key => $value) {
+			// read is directory
+			delete_files($value, TRUE);
+		}
+	}
 }
 /* End of file welcome.php */
 /* Location: ./application/controllers/welcome.php */
