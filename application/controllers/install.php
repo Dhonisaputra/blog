@@ -37,24 +37,29 @@ class Install extends CI_Controller {
 		
 		if($connected)
 		{
-			$text = '<?php'."\n";
-			$text .= '$server["remote_server"] = "'.$post["remote_server"].'";'."\n";
-			$text .= '$server["processing_server"] = "'.$post["processing_server"].'";'."\n";
-			$text .= '$server["server_url"] = "'.base_url().'";'."\n";
-			
-			$text .='$server["hostname"] = "'.$post['hostname'].'";'."\n";
-			$text .='$server["username"] = "'.$post['username'].'";'."\n";
-			$text .='$server["password"] = "'.$post['password'].'";'."\n";
-			$text .='$server["database"] = "'.$post['database'].'";'."\n";
-			$text .='$server["blog_key"] = "'.$post['blog_key'].'";'."\n";
+			if(is_dir(BASEPATH.'certificate'))
+			{
+				$text = '<?php'."\n";
+				$text .= '$server["remote_server"] = "'.$post["remote_server"].'";'."\n";
+				$text .= '$server["processing_server"] = "'.$post["processing_server"].'";'."\n";
+				$text .= '$server["server_url"] = "'.base_url().'";'."\n";
+				
+				$text .='$server["hostname"] = "'.$post['hostname'].'";'."\n";
+				$text .='$server["username"] = "'.$post['username'].'";'."\n";
+				$text .='$server["password"] = "'.$post['password'].'";'."\n";
+				$text .='$server["database"] = "'.$post['database'].'";'."\n";
+				$text .='$server["blog_key"] = "'.$post['blog_key'].'";'."\n";
 
-			file_put_contents(BASEPATH.'certificate/tester.server.cert', json_encode($post));
-			$text = $this->auth->encrypt(json_encode($post), '@cert', '@blog', true);
-			file_put_contents(BASEPATH.'certificate/server.cert', $text);
+				$text = $this->auth->encrypt(json_encode($post), '@cert', '@blog', true);
+				file_put_contents(BASEPATH.'certificate/server.cert', $text);
+				$this->install_database();
+				echo json_encode(array('code'=>200));
+			}else
+			{
+				echo json_encode(array('code'=>500, 'message' => 'directory certificate didnt exist'));
+			}
 
 			// $this->curl->simple_post('install/');
-			$this->install_database();
-			echo json_encode(array('code'=>200));
 		}else
 		{
 			echo json_encode(array('code'=>500));

