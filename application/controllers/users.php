@@ -35,9 +35,8 @@ class Users extends CI_Controller
 			show_error('Error insuficient data.', '500');
 			return false;
 		}
-
 		$post = $this->input->post();
-		$isExsist = json_decode($this->is_users_exist($post['user']['email'],false),true );
+		$isExsist = json_decode($this->is_users_exist($post['user']['email'], false),true );
 		if( $isExsist['code'] == 500 )
 		{
 			echo json_encode(array('code'=>500));
@@ -72,11 +71,11 @@ class Users extends CI_Controller
 		if(count($users) > 0)
 		{
 			$res = json_encode(array('code'=>500, 'message' => 'user exist'));
-			if($this->isAjax || $ajax){echo $res;}else{return $res;}
+			if($this->isAjax || $ajax == true){echo $res;}else{return $res;}
 		}else
 		{
 			$res = json_encode(array('code'=>200));
-			if($this->isAjax || $ajax){echo $res;}else{return $res;}
+			if($this->isAjax || $ajax == true){echo $res;}else{return $res;}
 		}
 	}
 	public function login()
