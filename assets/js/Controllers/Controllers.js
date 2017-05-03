@@ -60,7 +60,6 @@ window.mainApp
 	} );
 	$scope.newpost = {}
 	$scope.components = {categories:[], tagSelected: [] };
-	
 	$scope.submited_new_post = function() 
 	{
 		$scope.schedule_publish 	= $('#set_schedule_date').val()+' '+$('#set_schedule_time').val()+':00';
@@ -79,6 +78,7 @@ window.mainApp
 			schedule_publish 	: $scope.schedule_publish,
 			set_schedule 		: $scope.set_schedule,
 		}
+		console.log(data)
 
 		if(data.title == '')
 		{
@@ -319,7 +319,6 @@ window.mainApp
 		// console.log($scope.login_components)
 		var res = !$config.double_server ? $.post($config.server_url('users/login?dblServer=0'), $scope.login_components) : window.node.send('owner/login', $scope.login_components);
 		res.done(function(res){
-			console.log(res)
 			res = !$config.double_server ? JSON.parse(res) : res;
 			switch(res.code)
 			{

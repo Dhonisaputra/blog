@@ -69,7 +69,7 @@ window.mainApp
 	$posts.get('posts.id_post ='+$routeParams.id, function(res){
 		$scope.post = res[0]
 		$scope.title = $scope.post.title
-		$scope.post.content = $sce.trustAsHtml($scope.post.content);
+		$scope.post.trusted_content = $sce.trustAsHtml($scope.post.content);
 		// console.log($scope.post)
 		$posts.update_viewer($scope.post.id_post, parseInt($scope.post.counter_post) );
 		$scope.$apply();

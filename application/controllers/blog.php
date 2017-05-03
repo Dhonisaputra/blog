@@ -23,7 +23,6 @@ class Blog extends CI_Controller {
 		
 		$data = $this->curl->simple_post($server['remote_server'].'blog/component_json_client?using_auth=0', array('token' => $server['blog_key']) );
 		echo $data;
-
 		// echo json_encode($server);
 
 	}

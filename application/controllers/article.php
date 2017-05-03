@@ -41,6 +41,7 @@ class Article extends CI_Controller
 
 	public function insert_article()
 	{
+		$this->load->library('curl');
 		$post = $this->input->post();
 		$this->model_post->insert_post(array(
 				'id_user' 	=> $this->authentication->authorize['user_key'],
@@ -60,7 +61,7 @@ class Article extends CI_Controller
 		if(isset($post['article']['set_schedule']))
 		{
 
-			if($post['article']['set_schedule'] == true)
+			if($post['article']['set_schedule'] == 'true')
 			{
 				$str_time = strtotime($post['article']['schedule_publish']);
 				$date = Date('d', $str_time);
@@ -69,7 +70,7 @@ class Article extends CI_Controller
 				$minute = Date('i', $str_time);
 				$token_url = urlencode(base_url('blog/publish_article').'?token='.$article_hash.'&using_auth=0');
 				$setcronjob = 'https://www.setcronjob.com/api/cron.add?token=cxo0l0ub0y5xhrsrchfoehxwvfqtjgo9&minute='.$minute.'&hour='.$hour.'&day='.$date.'&month='.$month.'&timezone=Asia/Jakarta&url='.$token_url;
-				$cron = file_get_contents($setcronjob);
+				$cron = $this->curl->simple_get($setcronjob);
 				$cron = json_decode($cron,true);
 			
 			}
@@ -77,7 +78,7 @@ class Article extends CI_Controller
 		$this->model_post->update_post(
 			array(
 				'article_hash' => $article_hash,
-				'cron_id' => isset($post['article']['set_schedule'])? $cron['data']['id'] : null
+				'cron_id' => $post['article']['set_schedule'] == 'true'? $cron['data']['id'] : null
 			), 
 			array(
 				'id_post' => $id_post
@@ -191,6 +192,7 @@ class Article extends CI_Controller
 
 	public function publish_article()
 	{
+		$this->load->library('curl');
 		$token = $_GET['token'];
 		$decrypt = $this->auth->decrypt($token, 'hashing', 'articles', true);
 		print_r($decrypt);
@@ -212,7 +214,7 @@ class Article extends CI_Controller
 				)
 			);
 			$delcronjob = 'https://www.setcronjob.com/api/cron.delete?token=cxo0l0ub0y5xhrsrchfoehxwvfqtjgo9&id='.$data['cron_id'];
-			file_get_contents($delcronjob);
+			$this->curl->simple_get($delcronjob);
 		}
 	}
 

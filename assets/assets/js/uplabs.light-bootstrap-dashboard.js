@@ -28,7 +28,7 @@ $(document).ready(function(){
     // check if there is an image set for the sidebar's background
     setTimeout(function(){
         lbd.checkSidebarImage();
-    },4000)
+    },2000)
 
     // Init navigation toggle for small screens
     if(window_width <= 991){
