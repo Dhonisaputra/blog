@@ -31,7 +31,7 @@ window.mainApp
 	}
 	$scope.open_article = function(article)
 	{
-		return $config.web_url+'/#/open/article/'+article.id_post;
+		return $config.blog_server+'#/open/article/'+article.id_post;
 
 	}
 
