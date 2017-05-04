@@ -12,7 +12,6 @@ class Blog extends CI_Controller {
 	public function ping()
 	{
 		echo json_encode($_SERVER);
-		// print_r($_POST);
 	}
 
 	public function configuration()
@@ -29,24 +28,43 @@ class Blog extends CI_Controller {
 
 	public function uninstall()
 	{
+		$post = $this->input->post();
+		if(!isset($post['token']))
+		{
+			show_error('Insufficient parameters!', 500, 'Please check the documentation!');
+		}
+		include(APPPATH.'config/server.php');
 		$this->load->helper('file');
 		$this->load->helper('directory');
-		$data = $this->input->post();
-		if($data['type'] == 'reset')
+		$this->load->library('curl');
+		// check token in server_sudo
+		$dataauth['key'] = $server['blog_key'];
+		$dataauth['token'] = $post['token'];
+		$web = $post['server'].'authentication/token';
+		$isAuth = $this->curl->simple_post($web, $dataauth);
+		$isAuth = json_decode($isAuth,true);
+		if($isAuth['status_code'] == 200)
 		{
-			unlink(BASEPATH.'certificate/server.cert');
+
+			if($post['type'] == 'reset')
+			{
+				unlink(BASEPATH.'certificate/server.cert');
+			}else
+			{
+				// scan FC path
+				$dir = directory_map(FCPATH,1);
+				foreach ($dir as $key => $value) {
+					// read is directory
+					delete_files($value, TRUE);
+				}
+				foreach ($dir as $key => $value) {
+					// read is directory
+					unlink($value);
+				}
+			}
 		}else
 		{
-			// scan FC path
-			$dir = directory_map(FCPATH,1);
-			foreach ($dir as $key => $value) {
-				// read is directory
-				delete_files($value, TRUE);
-			}
-			foreach ($dir as $key => $value) {
-				// read is directory
-				unlink($value);
-			}
+			echo json_encode(array('code'=>500, 'message' => 'Token Mismatch!'));
 		}
 	}
 }
