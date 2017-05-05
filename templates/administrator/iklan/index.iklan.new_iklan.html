@@ -50,34 +50,26 @@
 				<div role="tabpanel" class="tab-pane" id="profile">
 					<div class="panel panel-default">
 						<div class="panel-body">
-							<a href="#/ads/new" class="btn btn-primary">Add new ads</a>
-							<hr>
-							<div class="list-group">
-								<div class="list-group-item text-center" ng-if="ad_list.length < 1">You didn't add any ad. ad one by clicking <strong>Add New Ads</strong> button </div>
-								<table class="table table-striped table-hover table-bordered" ng-if="ad_list.length > 0">
-									<thead>
-										<tr>
-											<th>Name</th>
-											<th>Shown</th>
-											<th>Embed url</th>
-											<th>Priority</th>
-											<th>Action</th>
-										</tr>
-									</thead>
-									<tbody>
-										<tr ng-repeat="item in ad_list">
-											<td>{{item.ad_name}}</td>
-											<td>{{item.ad_shown_counter}}</td>
-											<td>{{item.ad_url}}</td>
-											<td>{{item.ad_priority}}</td>
-											<td>
-												<a href="#/ads/edit/{{item.id_ad}}" class="btn btn-primary"><i class="glyphicon glyphicon-pencil"></i></a>
-												<button class="btn btn-primary" ng-click="remove_ads(item)"><i class="glyphicon glyphicon-trash"></i></button>
-											</td>
-										</tr>
-									</tbody>
-								</table>
+							<div class="row">
+								<div class="col-md-8">
+									<div class="">
+										<div class="form-group">
+										    <input type="text" class="form-control input-sm" id="exampleInputName2" placeholder="Example = <iframe src=':url_embed_src' other-attributes...></iframe>" ng-model="ads_configuration.new_ads_list">
+									  	</div>
+									</div>
+								</div>  
+								<div class="col-md-2">
+									<select class="form-control" ng-model="ads_configuration.new_ads_list_priority" ng-required>
+										<option class="" value="1">Low</option>
+										<option class="" value="2">Medium</option>
+										<option class="" value="3">High</option>
+									</select>
+								</div>
+								<div class="col-md-2">
+								    <button class="btn btn-primary" ng-click="insert_new_ads_list()">Add</button>
+								</div>  
 							</div>
+							<hr>
 						</div>	
 					</div>
 				</div>
@@ -90,40 +82,3 @@
 	</div>
 </div>
 
-<script type="text/ng-template" id="new_ads.html">
-	<a href="#/ads" class="btn btn-primary"> <i class="glyphicon glyphicon-chevron-left"></i> Back to ads panel</a>
-	<hr>
-	<form id="form_new_ads">
-		<div class="form-group">
-			<label>Ad Name</label>
-			<input type="text" class="form-control" name="" ng-model="new_ads.ad_name">
-		</div>
-		<div class="form-group">
-			<label>Ad Url</label>
-			<input type="text" class="form-control" name="" ng-model="new_ads.ad_url">
-		</div>
-		<div class="form-group">
-			<label>Ad priority</label>
-			<select class="form-control" ng-model="new_ads.priority" ng-required>
-				<option class="" value="1" ng-selected>Low</option>
-				<option class="" value="2">Medium</option>
-				<option class="" value="3">High</option>
-			</select>
-		</div>
-		<div class="form-group">
-			<label>Max shown</label>
-			<input type="number" class="form-control" name="" ng-model="new_ads.max_shown">
-		</div>
-		<div class="form-group">
-			<label>Minimum time to show</label>
-			<input type="time" class="form-control" name="" ng-model="new_ads.ad_min_time_show">
-		</div>
-		<div class="form-group">
-			<label>Maximum time to show</label>
-			<input type="time" class="form-control" name="" ng-model="new_ads.ad_max_time_show">
-		</div>
-		<div class="form-group">
-			<button class="btn btn-primary" type="button" ng-click="add_new_ads()">Save Ad</button>
-		</div>
-	</form>
-</script>

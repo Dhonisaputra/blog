@@ -1,37 +1,37 @@
 window.mainApp
-.service('$blogconfig', function($config){
-    this.adslist = [
-        '<img src="http://s3.lk21.org/assets/naganewx.gif" style="margin: 5px 0px;">',
-        '<img src="http://s3.lk21.org/assets/luxury-top.gif" style="margin: 5px 0px;">',
-        '<img src="http://s3.lk21.org/assets/hoyapkrnew-rev.gif" style="margin: 5px 0px;">',
-        '<img src="http://s3.lk21.org/assets/axioopkrnew.gif" style="margin: 5px 0px;">',
-        '<img src="http://s3.lk21.org/assets/naganewx.gif" style="margin: 5px 0px;">',
-        '<img src="http://s0.lk21.org/assets/remibet.gif" style="margin: 5px 0px;">',
-        '<img src="http://s3.lk21.org/assets/vegas.gif" style="margin: 5px 0px;">',
-        '<img src="http://s3.lk21.org/assets/royalbola.gif" style="margin: 5px 0px;">',
+.service('$blogconfig', function(F_Ads){
+    $this = this;
+    $this.ads_options = {}
+    $this.ads_list = []; // length of ads records
+    $this.ads_options.ads_length = 3; // how many ads will be shown in each article;
+    $this.shuffled_ads = []; // array to contain ads which has been shuffled.
+    F_Ads.get_components(
+        function(res){
+            $this.ads_list = res.list.map(function(res){return res.ad_url});
+            $.each(res['options'], function(a,b){
+                $this.ads_options[b.name] = b.value;
+            })
 
-    ];
-    this.num_ads_pershow = 3;
-    this.blog_ads_shuffle = [];
-    this.set_number_pershow = function(num)
+        },
+        function(){
+
+        }
+    )
+
+    $this.shuffle_ads = function()
     {
-        this.num_ads_pershow = num;
-    }
-    this.shuffle_ads = function()
-    {
-        var _parents = this;
         var ads_result = []
-        if(this.blog_ads_shuffle.length == this.adslist.length)
+        if($this.shuffled_ads.length == $this.ads_list.length)
         {
-            this.blog_ads_shuffle = [];
+            $this.shuffled_ads = [];
         }
 
-        for (var i = 0; i < this.num_ads_pershow; i++) {
-            var rand = Math.floor((Math.random() * _parents.adslist.length) + 1);            
-            if( _parents.adslist[rand] && _parents.blog_ads_shuffle.indexOf(rand) < 0 && _parents.blog_ads_shuffle.length < _parents.adslist.length)
+        for (var i = 0; i < parseInt($this.ads_options.ads_length); i++) {
+            var rand = Math.floor((Math.random() * $this.ads_list.length) + 1);            
+            if( $this.ads_list[rand] && $this.shuffled_ads.indexOf(rand) < 0 && $this.shuffled_ads.length < $this.ads_list.length)
             {
-                ads_result.push(_parents.adslist[rand]);
-                _parents.blog_ads_shuffle.push(rand);
+                ads_result.push($this.ads_list[rand]);
+                $this.shuffled_ads.push(rand);
             }else
             {
                i--;

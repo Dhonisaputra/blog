@@ -25,7 +25,7 @@ window.mainApp
 });
 
 
-window.mainApp.run(['$tools', '$q','$rootScope', '$location', '$routeParams','$config', '$owner', '$authorize', function ($tools,$q,$rootScope, $location, $routeParams, $config, $owner, $authorize) {
+window.mainApp.run(['$tools', '$q','$rootScope', '$location', '$routeParams','$config','F_Config', '$owner', '$authorize', function ($tools,$q,$rootScope, $location, $routeParams, $config, F_Config, $owner, $authorize) {
     $rootScope.$on('$routeChangeStart', function (event, next, current) {
         if(!next.$$route.resolve){next.$$route.resolve = {}}
         // when data configuration don't loaded yet.
@@ -42,6 +42,7 @@ window.mainApp.run(['$tools', '$q','$rootScope', '$location', '$routeParams','$c
                         defer.resolve(res); 
                     }
                     $config.initialize_configuration(res);
+                    F_Config.initialize_configuration(res);
                 }) 
                 return defer.promise;
             }

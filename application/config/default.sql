@@ -130,3 +130,6 @@ CREATE TABLE `users` (
   `user_key` varchar(20) NOT NULL,
   PRIMARY KEY (`id_user`)
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=latin1;
+
+INSERT INTO `ads_options` (`name`, `value`, `description`) VALUES ('auto_ads', '0', ''), ('shuffle_ads', '0', ''), ('ads_length', '0', '');
+

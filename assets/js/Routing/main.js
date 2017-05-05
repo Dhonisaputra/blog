@@ -37,6 +37,12 @@ window.mainApp.config(function($routeProvider) {
 			controller: 'controller.index.ads',
 			need_login: true
 		})
+		.when('/ads/new', {
+			title: 'Ads new ads',
+			templateUrl: 'new_ads.html',
+			controller: 'controller.index.ads',
+			need_login: true
+		})
 		.when('/logout', {
 			templateUrl: 'templates/administrator/administrator.logout.html',
 			controller: 'controller.administrator.logout',

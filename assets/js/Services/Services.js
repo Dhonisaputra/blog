@@ -93,6 +93,7 @@ window.mainApp
         data = $.extend({ credential: $owner.credential() }, data);
         if(!$config.double_server)
         {
+            console.log(data);
             $.post($config.server_url('article/update_articles'),  data)
             .done(function(res){
                 console.log(res)
@@ -252,13 +253,50 @@ window.mainApp
     }   
     
 })
-.service('$ads', function($config, $owner){
+.service('$ads', function($config, $owner, F_Ads){
+    $this = this;
     this.configuration = {}
+    this.get_configuration = function(callback)
+    {
+        F_Ads.get_options(function(res){
+            $.each(res, function(a,b){
+                $this.configuration[b.name] = b.value;
+            })
+            if(typeof callback == 'function')
+            {
+                callback($this.configuration)    
+            }
+        })    
+    }
+    this.get_components = function(callback)
+    {
+        F_Ads.get_components(function(res){
+            $.each(res['options'], function(a,b){
+                $this.configuration[b.name] = b.value;
+            })
+            $this.list = res.list;
+
+            if(typeof callback == 'function')
+            {
+                callback($this.configuration, $this.list, res)    
+            }
+        })
+    }
     this.toggling_auto_ads = function(where, callback)
     {
+        console.log($config);
         if(!$config.double_server)
         {
             // $config.post($config.server_url(''), {where: where}, callback )
+            
+            F_Ads.auto_ads(
+                where,
+                callback,
+                function(err)
+                {
+                    console.log(err);
+                }
+            );
         }else
         {
             $config.node.send('ads/toggling_auto_ads', {credential: $owner.credential(), where: where })
@@ -274,7 +312,14 @@ window.mainApp
     {
         if(!$config.double_server)
         {
-            // $config.post($config.server_url(''), {where: where}, callback )
+            F_Ads.auto_ads(
+                where,
+                callback,
+                function(err)
+                {
+                    console.log(err);
+                }
+            );
         }else
         {
             
@@ -290,7 +335,14 @@ window.mainApp
     {
         if(!$config.double_server)
         {
-            // $config.post($config.server_url(''), {where: where}, callback )
+            F_Ads.shuffle_ads(
+                where,
+                callback,
+                function(err)
+                {
+                    console.log(err);
+                }
+            );
         }else
         {
             
@@ -300,6 +352,19 @@ window.mainApp
             })
             
         }
+    }
+    this.update_ads_length = function(ads_length, success, error)
+    {
+        F_Ads.update_ads_length({ads_length: ads_length}, success, error)
+    }
+    this.add_new_ads = function(data, success, error)
+    {
+        F_Ads.add_new_ads(data, success, error)
+    }
+
+    this.remove_ads = function(data, success, error)
+    {
+        F_Ads.remove_ads(data, success, error)
     }
     
 })

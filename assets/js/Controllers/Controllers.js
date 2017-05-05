@@ -197,8 +197,8 @@ window.mainApp
 			}
 
 		}
-
 		$posts.update(data, function(res){
+
 			Snackbar.show('Post telah diupdate');
 		})
 	}
@@ -235,6 +235,9 @@ window.mainApp
 			$posts.set_data(res)
 			var post = res[0]
 			$scope.datapost = post;
+
+			// karena ckeditor menyimpan embed menjadi htmlspecial_character, jadi gunakan $("<textarea/>").html($scope.datapost.content).val() untuk menjadikannya html tag standard
+			$scope.datapost.content = $("<textarea/>").html($scope.datapost.content).val()
 			// console.log($scope.datapost)
 
 			// config CKEDITOR
@@ -340,11 +343,28 @@ window.mainApp
 	}
 })
 .controller('controller.index.ads', function($scope, $config, $sce, $ads){
+	$scope.ads = {}
+	$scope.ads.list = []
+	$scope.new_ads = {}
+	$scope.new_ads.ad_name = '';
+	$scope.new_ads.ad_url = '';
+	$scope.new_ads.ad_priority = 1;
+	$scope.new_ads.ad_max_shown = null;
+	$scope.new_ads.ad_min_time_show = null;
+	$scope.new_ads.ad_max_time_show = null;
+
+	$ads.get_components(function(conf, list){
+		$scope.ads_configuration = conf;
+		$scope.ad_list = list;
+		$scope.$apply();
+	});
+
 	$scope.update_auto_ads = function()
 	{
-		if($scope.auto_ads == 1)
+		if($scope.ads_configuration.auto_ads == 1)
 		{
-			$ads.toggling_auto_ads({auto_ads: 1}, function(){
+			$ads.toggling_auto_ads({auto_ads: 1}, function(res){
+				console.log(res);
 				Snackbar.show('Auto ads telah di aktifkan');
 			})
 		}else
@@ -371,10 +391,40 @@ window.mainApp
 		}
 	}
 
-	$scope.is_auto_ads = function()
+	$scope.update_ads_length = function()
 	{
 
-		$scope.auto_ads = $ads.configuration.auto_ads? $ads.configuration.auto_ads : 0
-		// $scope.$apply();
+		$ads.update_ads_length($scope.ads_configuration.ads_length, function(){
+			Snackbar.show('Ads length that will shown in page has been updated!');
+		}, function(){
+			alert('Error when updating ads length');
+		})
 	}
+	$scope.remove_ads = function(item)
+	{
+		$ads.remove_ads({where:{id_ad: item.id_ad}}, function(){
+			Snackbar.show('Ad has been removed!');
+			$ads.get_components(function(conf, list){
+				$scope.ad_list = list;
+				$scope.$apply();
+			});
+
+		}, function(){
+			alert('Error when updating ads length');
+		})
+	}
+
+	$scope.add_new_ads = function()
+	{
+		$ads.add_new_ads(
+			{data: $scope.new_ads}, 
+			function(res){
+				console.log(res)
+				$('#form_new_ads')[0].reset()
+			},
+			function(res){
+				console.log(res)
+			}
+		)
+	} 
 });

@@ -7,12 +7,10 @@
 	</div>
 	<div class="col-md-8">
 
-		<div class="list-group sidebar" id="list-post">
-			<div class="list-group-item header">
-				{{post.title}}
-			</div>
-			<div class="list-group-item body">
-				<div ng-bind-html="post.trusted_content"></div>
+		<div class="panel panel-default" id="list-post">
+			<div class="panel-body content-article">
+				<h1>{{post.title}}</h1>
+				<div ng-bind-html="post.trusted_content" article-body></div>
 			</div>
 		</div>
 	</div>

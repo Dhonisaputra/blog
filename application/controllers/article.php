@@ -106,7 +106,7 @@ class Article extends CI_Controller
 	public function update_articles()
 	{
 		$post = $this->input->post();
-		// print_r($post); return false;
+		print_r($post);
 		$this->model_post->update_post($post['update']['article'], $post['where'], $this->db);
 		$this->model_post->remove_post_categories($post['where'], $this->db);
 		foreach ($post['update']['categories'] as $key => $value) {

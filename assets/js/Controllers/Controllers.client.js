@@ -69,7 +69,9 @@ window.mainApp
 	$posts.get('posts.id_post ='+$routeParams.id, function(res){
 		$scope.post = res[0]
 		$scope.title = $scope.post.title
-		$scope.post.trusted_content = $sce.trustAsHtml($scope.post.content);
+		$scope.post.content = $("<textarea/>").html($scope.post.content).val()
+		var $trusted = $sce.trustAsHtml($scope.post.content);
+		$scope.post.trusted_content = $trusted;
 		// console.log($scope.post)
 		$posts.update_viewer($scope.post.id_post, parseInt($scope.post.counter_post) );
 		$scope.$apply();
@@ -80,9 +82,9 @@ window.mainApp
 	{
 		var adsshown = 0;
 		var adslist = $blogconfig.shuffle_ads();
-		var everyNp = Math.floor( $('#list-post .body').children().length/adslist.length );
+		var everyNp = Math.floor( $('[article-body]').children().length/adslist.length );
 		var i = 1;
-		$('#list-post .body').children().each(function(){
+		$('[article-body]').children().each(function(){
 
 			if(i == everyNp)
 			{

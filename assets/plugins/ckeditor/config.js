@@ -22,7 +22,7 @@ CKEDITOR.editorConfig = function( config ) {
 		{ name: 'paragraph', groups: [ 'list', 'indent', 'blocks', 'align', 'paragraph' ] }
 	];*/
 	config.toolbar = [
-		{ name: 'insert', items: [ 'Image', 'Table', 'HorizontalRule', 'SpecialChar', 'CodeSnippet', 'Embed', "PageBreak" ] },
+		{ name: 'insert', items: [ 'Source', 'Image', 'Table', 'HorizontalRule', 'SpecialChar', 'CodeSnippet', 'Embed',"oembed", "PageBreak" ] },
 		{ name: 'links', items: [ 'Link', 'Unlink' ] },
 		{ name: 'clipboard', items: [ 'Cut', 'Copy', 'Paste', 'Undo', 'Redo', 'Font', 'FontSize', 'Format', 'PasteFromWord' ] },
 		{ name: 'basicstyles', items: [ 'Bold', 'Italic', 'Strike' ] },
@@ -49,9 +49,10 @@ CKEDITOR.editorConfig = function( config ) {
 	config.removeDialogTabs = 'image:advanced;link:advanced';
 
 	config.skin = 'bootstrapck';
-	config.extraPlugins = 'autogrow,codesnippet,dialog,lineutils,filetools,uploadwidget,uploadimage,embed,embedbase,autolink';
+	config.extraPlugins = 'autogrow,codesnippet,dialog,lineutils,filetools,uploadwidget,uploadimage,embed,embedbase,autolink,oembed';
 	config.autoGrow_minHeight = 450;
 	config.autoGrow_maxHeight = 750;
+	config.allowedContent = true;
 
 	// config.autoGrow_maxHeight = 1200;
 

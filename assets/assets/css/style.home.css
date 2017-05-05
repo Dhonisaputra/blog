@@ -116,3 +116,8 @@ body
 	margin-bottom: 10px;
 
 }
+
+.content-article
+{
+	word-break: break-word;
+}
