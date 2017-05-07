@@ -1,6 +1,12 @@
 
 window.mainApp.config(function($routeProvider) {
 	$routeProvider
+		.when('/', {
+			title: 'Dashboard',
+			templateUrl: 'templates/administrator/article/post.dashboard.html',
+			controller: 'administrator_dashboard',
+			need_login: true
+		})
 		.when('/login', {
 			title: 'Login',
 			templateUrl: 'templates/administrator/administrator.login.html',
@@ -48,6 +54,10 @@ window.mainApp.config(function($routeProvider) {
 			controller: 'controller.administrator.logout',
 			need_login: true
 		})
+		.when('/error/404', {
+			title: 'Error 404',
+			templateUrl: 'templates/others/404.html'
+		})
 		.otherwise({
 			redirectTo: function(){
 				var cookies = Cookies.getJSON('user');
@@ -56,7 +66,7 @@ window.mainApp.config(function($routeProvider) {
 					return (cookies.app_auth)? '/dashboard/post' : '/login'
 				}else
 				{
-					return '/login'
+					return '/error/404'
 				}
 				
 			}

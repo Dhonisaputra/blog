@@ -121,3 +121,20 @@ body
 {
 	word-break: break-word;
 }
+
+.comment-item
+	{
+		border-bottom: 1px solid #eee;
+		padding: 10px 0px;
+	}
+
+	[ng-comment]
+	{
+		max-height: 500px;
+		overflow-y: auto;
+		overflow-x: hidden;
+	}
+	[ng-article-comment--replying]
+	{
+		display: none;
+	}

@@ -117,6 +117,7 @@ class Article extends CI_Controller
 
 	public function get()
 	{
+		$this->load->model('comment_model');
 		
 		$post = $this->input->post();
 		$post['where'] = isset($post['where'])? $post['where'] : '';
@@ -125,10 +126,10 @@ class Article extends CI_Controller
 		foreach ($data as $key => $value) {
 			// $cat = $this->model_post->get_post_categories(array('id_post' => $value['id_post']))->result_array();
 			// $data[$key]['categories'] = $cat;
-			$data[$key]['tag_item'] = explode(',', $value['post_tag']);
-            $data[$key]['categories_id'] = explode(',', $value['group_category_id']);
-            $data[$key]['categories_name'] = explode(',', $value['group_category_name']);
-
+			$data[$key]['tag_item'] 		= explode(',', $value['post_tag']);
+            $data[$key]['categories_id'] 	= explode(',', $value['group_category_id']);
+            $data[$key]['categories_name'] 	= explode(',', $value['group_category_name']);
+            $data[$key]['comments'] 		= $this->comment_model->get_comment('*', array('id_post' => $value['id_post']))->result_array();
             preg_match_all($rex, $value['content'], $matches);
             if(isset($matches[1]))
             {

@@ -215,6 +215,9 @@ window.mainApp
 
     }
 })
+.service('$owner', function (F_Comment) {
+    
+})
 .service('$config', function (global_configuration) {
     this.public_key = '';
     this.source = undefined;
@@ -250,8 +253,7 @@ window.mainApp
         $.each(config, function(a,b){
             _parents[a] = b;
         })
-    }   
-    
+    }     
 })
 .service('$ads', function($config, $owner, F_Ads){
     $this = this;
@@ -415,7 +417,6 @@ window.mainApp
         })
 
     }
-
 })
 .service('$tools', function ($config, $owner) {
     this.range = function(input, total)
@@ -457,7 +458,7 @@ window.mainApp
         })
     }
 
-    this. isJson = function(str) {
+    this.isJson = function(str) {
         try {
             JSON.parse(str);
         } catch (e) {

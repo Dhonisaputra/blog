@@ -52,7 +52,7 @@ window.mainApp
 
                     // create some new html elements to hold the separate info
                     var firstSpan   = $compile('<span>' + firstPart + '</span>')(scope);
-                    var readMoreLink = '<a href="#/open/article/'+data.id_post+'">Read more</a>'
+                    var readMoreLink = '<br><a href="#/open/article/'+data.id_post+'">Read more</a> '
 
 
                     // remove the current contents of the element
@@ -128,7 +128,7 @@ window.mainApp
                     var secondSpan      = $compile('<span ng-if="collapsed">' + secondPart + '</span>')(scope);
                     var moreIndicatorSpan = $compile('<span ng-if="!collapsed">... </span>')(scope);
                     var lineBreak       = $compile('<br ng-if="collapsed">')(scope);
-                    var toggleButton    = $compile('<a class="collapse-text-toggle" ng-click="toggle()">{{collapsed ? "read less" : "read more"}}</a>')(scope);
+                    var toggleButton    = $compile(' <a class="collapse-text-toggle" ng-click="toggle()">{{collapsed ? "read less" : "read more"}}</a> ')(scope);
 
                     // remove the current contents of the element
                     // and add the new ones we created
@@ -144,6 +144,36 @@ window.mainApp
                     element.append(text);
                 }
             });
+        }
+    };
+}])
+.directive('ngComment', ['$compile', 'F_Comment', function($compile, F_Comment) {
+    
+    return {
+        link: function (scope, element, attrs) {
+
+            F_Comment.comment_credential.initialize();
+            var newDirective = angular.element(F_Comment.components.element_supports);
+            element.append(newDirective);
+
+            scope[F_Comment.components.scope_name] = F_Comment.components.object_components;
+            $compile(newDirective)(scope);
+        }
+    };
+}])
+.directive('ngCommentCredential', ['$compile', 'F_Comment', function($compile, F_Comment) {
+    
+    return {
+        link: function (scope, element, attrs) {
+           
+        }
+    };
+}])
+.directive('ngCommentArticleTextarea', ['$compile', 'F_Comment', function($compile, F_Comment) {
+    
+    return {
+        link: function (scope, element, attrs) {
+            
         }
     };
 }])

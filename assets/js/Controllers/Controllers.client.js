@@ -65,17 +65,24 @@ window.mainApp
 		}, 1)
 	}
 })
-.controller('post.opened', function($scope,$config, $posts, $routeParams, $blogconfig, $sce ){
+.controller('post.opened', function($scope,$config, $posts, $routeParams, $blogconfig, $sce, F_Comment,F_Tools ){
+	console.log($scope)
+	$scope.comment = {}
+	$scope.comment.comment_content = ''
 	$posts.get('posts.id_post ='+$routeParams.id, function(res){
 		$scope.post = res[0]
-		$scope.title = $scope.post.title
+		$scope.title = $scope.post.title;
+		$scope.comment.id_post = parseInt($scope.post.id_post);
+
 		$scope.post.content = $("<textarea/>").html($scope.post.content).val()
 		var $trusted = $sce.trustAsHtml($scope.post.content);
 		$scope.post.trusted_content = $trusted;
-		// console.log($scope.post)
 		$posts.update_viewer($scope.post.id_post, parseInt($scope.post.counter_post) );
 		$scope.$apply();
 		$scope.init_ads();
+		$('[xss] iframe').each(function(a,b){
+			$(b).css({position:'inherit'})
+		})
 	})
 
 	$scope.init_ads = function()
@@ -96,5 +103,64 @@ window.mainApp
 			}
 
 		})
+	}
+
+	$scope.submit_comment = function()
+	{
+		$scope.comment.id_comment = 0;
+		F_Comment.submit_comment($scope.comment)
+		.done(function(res){
+			console.log(res)
+			res = F_Tools.isJson(res)? JSON.parse(res): res;
+			data.id_comment = res.id_comment;
+			$scope.post.comments.push(data)
+			F_Comment.hide_reply_comment_section()
+		})
+		.fail(function(res){
+			console.log(res)
+		})
+	}
+	$scope.submit_replying_comment = function(item)
+	{
+		var data = {
+			comment_name: $scope.comment.comment_name,
+			comment_email: $scope.comment.comment_email,
+			id_post: $scope.comment.id_post,
+			comment_content: $scope.comment.reply_comment_content,
+			id_comment_reference: $scope.comment.id_comment,
+		}
+		F_Comment.submit_comment(data)
+		.done(function(res){
+			res = F_Tools.isJson(res)? JSON.parse(res): res;
+			data.id_comment = res.id_comment;
+			$scope.post.comments.push(data)
+			$scope.comment.reply_comment_content = '';
+			$scope.$apply();
+		})
+		.fail(function(res){
+			console.log(res)
+		})
+	}
+
+	$scope.parseCommentTimestamp = function(time)
+	{
+		return moment(time, 'YYYY-MM-DD HH:mm:ss').fromNow();
+	}
+	$scope.reply_comment = function(id_comment)
+	{
+		$scope.comment.id_comment = id_comment;
+		F_Comment.show_reply_comment_section($routeParams.id, id_comment)
+	}
+
+	$scope.commentLoginAuth = function()
+	{
+		F_Comment.login(
+			$scope.comment_components.credential,
+			function(res){
+            	F_Comment.comment_credential.set(res.credential)
+            	$scope[F_Comment.components.scope_name].isLogin = true;
+            	$scope.$apply();
+			}
+		)
 	}
 });

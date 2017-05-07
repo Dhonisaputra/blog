@@ -9,9 +9,15 @@
 
 		<div class="panel panel-default" id="list-post">
 			<div class="panel-body content-article">
-				<h1>{{post.title}}</h1>
-				<div ng-bind-html="post.trusted_content" article-body></div>
+				<!-- <div ng-include="'article.sct'"></div> -->
+				<!-- <hr> -->
+				<!-- <div ng-include="'share.sct'"></div> -->
+				<!-- <hr> -->
+				<div>
+					<section id="article-comments" ng-comment></section>
+				</div>
 			</div>
+			
 		</div>
 	</div>
 	<div class="col-md-4">
@@ -27,4 +33,61 @@
 			</div>
 		</div>
 	</div>
+	
+	
 </div>
+
+<script type="text/ng-template" id="share.sct">
+	<section id="article-share">
+		<ul>
+			<li>Facebook</li>
+			<li>Twitter</li>
+			<li>Google Plus</li>
+			<li>Tumblr</li>
+		</ul>
+	</section>
+</script>
+
+
+<script type="text/ng-template" id="article.sct">
+	<h1>{{post.title}}</h1>
+	<div ng-bind-html="post.trusted_content" article-body></div>
+</script>
+
+<!-- <div id="article-comments--submit-comment">
+
+			
+			
+			
+			
+		</div>
+
+		<div id="article-comments--list-comment"> 
+			<div class="row comment-item" ng-repeat="comment_item in post.comments" ng-if="comment_item.id_comment_reference == '0'" ng-article-comment="{{comment_item.id_comment}}">
+				<div class="col-md-4">
+					<h4>{{comment_item.comment_name}} <br><small>{{parseCommentTimestamp(comment_item.comment_timestamp)}}</small></h4>
+					<div class="comment-content">
+						{{comment_item.comment_content}}
+					</div>
+					<div class="form-group">
+						<a ng-click="reply_comment(comment_item.id_comment)">Reply</a>
+					</div>
+					<div class="form-group" ng-article-comment--replying="{{comment.id_post}}.{{comment_item.id_comment}}">
+						<div id="article-comments--submit-comment-on-comment" ng-article-comment--replying-comment> 
+							<div class="form-group">
+								<input type="text" class="form-control" name="" ng-model="comment.comment_name">
+							</div>
+							<div class="form-group">
+								<input type="email" class="form-control" name="" ng-model="comment.comment_email">
+							</div>
+							<div class="form-group">
+								<textarea class="form-control" ng-model="comment.reply_comment_content"></textarea>
+							</div>
+							<div class="form-group">
+								<button class="btn btn-success" ng-click="submit_replying_comment(comment, $index)"> Send! </button>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>	 -->
