@@ -1,0 +1,32 @@
+<div class="col-md-12">
+	<div class="comment_item--comment-heading">
+		<div class="comment-item--comment-name">{{comment_item.comment_name}}</div>
+		<div class="comment-item--comment-time"> <i class="material-icons icon-time">access_time</i> {{parseCommentTimestamp(comment_item.comment_timestamp)}}</div>
+		<div class="comment-item--comment-properties">
+			<ul>
+				<li class="text-muted"></li>
+			</ul>
+		</div>
+	</div>
+	<div class="comment-content--comment-content">
+		{{comment_item.comment_content}}
+	</div>
+	<div class="form-group" ng-comment-button-reply-comment ng-if="__comment.__helper.isLogin()">
+		<!-- please create function below in your controller -->
+		<a ng-click="openReplyComment(comment.id_post, comment_item.id_comment)">Reply</a>
+	</div>
+	<div>
+		<section id="article-comments" ng-comment-list ng-comment-name="comment_in_{{comment_item.id_comment}}" ng-comment-data="filteringCommentOfComment(post.comments, comment_item.id_comment)"></section>	
+	</div>
+	<div class="form-group" ng-comment-replying-comment="{{comment.id_post}}.{{comment_item.id_comment}}">
+		<div id="article-comments--submit-comment-on-comment" ng-comment-replying-comment-list> 
+			<div class="form-group">
+				<textarea class="form-control" ng-model="comment.reply_comment_content" ng-ckeditor ng-comment-textfield></textarea>
+			</div>
+			<div class="form-group">
+				<button class="btn btn-success" ng-click="submit_replying_comment(comment, $index)"> Send! </button>
+			</div>
+		</div>
+		
+	</div>
+</div>

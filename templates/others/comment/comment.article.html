@@ -1,0 +1,8 @@
+<div class="form-group">
+	<input type="number" class="sr-only" name="" ng-model="comment.id_post">
+	<textarea class="form-control" ng-model="comment.comment_content" ng-comment-comment-editor></textarea>
+</div>
+<div class="form-group">
+	<button class="btn btn-success" ng-click="submit_comment(comment, comment.$index)"> Send! </button>
+	<a ng-click="CommentLogout()">Comment with other account</a>
+</div>

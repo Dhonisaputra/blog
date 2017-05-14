@@ -1,0 +1,33 @@
+<div id="slick_socialfeed">
+
+
+    <div ng-repeat="it in socialfeed_fb_event | sortBy:'-dt_create':'i'" class="news-box {{it.social_network}}-news" id="{{it.social_network}}_{{it.id}}"  dt-create="{{it.dt_create}}" social-feed-id = "{{it.id}}">
+        <div class="news-content">
+            <!-- <div class="news-media" style="width: 100%;background-image: url({{it.raw.full_picture}}); "> -->
+            <div class="news-media" style="width: 100%;background-image: url({{it.raw.full_picture}}); "">
+            </div>
+            <div class="news-text">
+                <div class="news-title"><i class="fa fa-{{it.social_network}} pull-right"></i> </div>
+                <div class="news-words">{{it.text}}</div>
+            </div>
+            <div class="news-footer">
+                <div class="news-footer--item">{{it.time_ago}}</div>
+                <div class="news-footer--item"> <span class="fa fa-comment-o"></span> <span class="comment-length">0</span></div>
+                <div class="news-footer--item">
+                    <a href="{{it.link}}" target="_blank" class="readmore">
+                        Read More
+                    </a>
+                </div>
+                <!-- <div class="news-footer-share">
+                    <div class="fb-share-button" data-href="val.permalink_url" data-layout="button_count"></div>
+                </div>
+                <div class="news-footer-read pull-right">
+                    <a href="{{it.link}}" target="_blank">
+                        Read More
+                    </a>
+                </div> -->
+            </div>
+        </div>
+    </div>
+
+</div>

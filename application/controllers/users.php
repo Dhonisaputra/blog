@@ -1,0 +1,172 @@
+<?php
+
+class Users extends CI_Controller
+{
+
+	function __construct()
+	{
+		# code...
+		parent::__construct();
+		$this->isAjax = $this->input->is_ajax_request();
+		$this->load->model('users_model');
+	}
+
+	
+	private function encrypt($data)
+	{
+		require_once(APPPATH.'libraries/profiling/Pengguna.php');
+		$auth = new Pengguna;
+		return $auth->create_account($data, array('password_hash' => 'password', 'exception' => 'email' ));
+	}
+	
+	public function curl_create_new_users()
+	{
+		$this->load->library('curl');
+		$this->create_new_users();
+	}
+	public function signup()
+	{
+		$post = $this->input->post();
+		$user = $this->users_model->new_users(array(
+				'username' 	=> $post['username'],
+				'email' 	=> $post['email'],
+				'password'	=> $post['password'],
+				'key_A' 		=> $post['key_A'],
+				'key_B' 		=> $post['key_B'],
+				'userlevel' 	=> $post['user']['userlevel'],
+			)
+		);
+		if($user['insert_id'] > 0)
+		{
+			echo json_encode(array('code'=>200, 'message' => 'user inserted'));
+		}else
+		{
+			echo json_encode(array('code'=>500, 'message' => 'user error on inserted'));
+		}
+	}
+	public function create_new_users()
+	{
+		if( !isset($_POST['user']['username']) 	||
+			!isset($_POST['user']['email']) 	||
+			!isset($_POST['user']['password'])
+			){
+			show_error('Error insuficient data.', '500');
+			return false;
+		}
+		$post = $this->input->post();
+		$isExsist = json_decode($this->is_users_exist($post['user']['email'], false),true );
+		if( $isExsist['code'] == 500 )
+		{
+			echo json_encode(array('code'=>500));
+		}else
+		{
+			$e = $this->encrypt($post['user']);
+			$user = $this->users_model->new_users(array(
+					'username' 	=> $e['username'],
+					'email' 	=> $e['email'],
+					'password'	=> $e['password'],
+					'key_A' 		=> $e['key_A'],
+					'key_B' 		=> $e['key_B'],
+					'userlevel' 	=> $post['user']['userlevel'],
+				)
+			);
+			if($user['insert_id'] > 0)
+			{
+				echo json_encode(array('code'=>200, 'message' => 'user inserted'));
+			}else
+			{
+				echo json_encode(array('code'=>500, 'message' => 'user error on inserted'));
+			}
+		}
+	}
+
+	public function is_users_exist($email = FALSE, $ajax = true)
+	{
+
+		$post = $this->input->post();
+		$email = $email == TRUE? $email : $post['email'];
+		$users = $this->users_model->get_users('*', array('email' => $email))->result_array();
+		if(count($users) > 0)
+		{
+			$res = json_encode(array('code'=>500, 'message' => 'user exist'));
+			if($this->isAjax || $ajax == true){echo $res;}else{return $res;}
+		}else
+		{
+			$res = json_encode(array('code'=>200));
+			if($this->isAjax || $ajax == true){echo $res;}else{return $res;}
+		}
+	}
+	public function login()
+	{
+		require_once(APPPATH.'libraries/profiling/Pengguna.php');
+		$post = $this->input->post();
+		$get = $this->input->get();
+		if(!isset($post['email']) || !isset($post['password']))
+		{
+			echo json_encode(array('status'=>500, 'message'=> 'insuficient data!'));
+			return false;
+		}
+
+		$auth = new Pengguna;
+		$return = $this->users_model->get_users('*', array('email' => $post['email']))->result_array();
+		if(count($return) > 0)
+		{
+
+			$return = $return[0];
+			$verify = $auth->password_verify(array(
+					'password' => $post['password'],
+					'encrypted_password' => $return['password'],
+					'key'=> array($return['key_A'], $return['key_B'])
+				));
+			if($verify)
+			{
+				$credential = array(
+					'status' 	=> 200, 
+					'email' => $return['email'], 
+					'key'	=> $return['user_key'], 
+					'username' 	=> $return['username'], 
+					'key_A' => $return['key_A'],
+					'id_user' 	=> $return['id_user'],
+					'userlevel' => $return['userlevel']
+				);
+
+				$this->session->set_userdata($credential);
+
+				if(!isset($get['dblServer']) || $get['dblServer'] == 1 )
+				{
+					echo json_encode($credential);
+				}else
+				{
+					$auth = $this->users_model->set_credential($return);
+					echo json_encode($auth);
+				}
+			}else
+			{
+				echo json_encode(array('status'=> 500,'message' => 'Wrong password!') );
+			}
+		}else
+		{
+			echo json_encode(array('status'=> 404,'message' => 'users not recognized!', 'post' => $_POST) );
+		}
+	}
+
+	public function logout()
+	{
+		$credential = array(
+			'status' 	=> "", 
+			'email' => "", 
+			'key'	=> "", 
+			'username' 	=> "", 
+			'key_A' => "",
+			'id_user' 	=> "",
+			'userlevel' => "",
+		);
+		$this->session->unset_userdata($credential);
+	}
+	public function get_credential($data)
+	{
+		$cr = $this->users_model->get_credential($data);
+		print_r($cr);
+	}
+
+}
