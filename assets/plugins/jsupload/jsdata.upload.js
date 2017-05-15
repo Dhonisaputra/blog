@@ -71,6 +71,7 @@ $('#confirmation-assessment--input-upload').on('change', function(event){
 
 		}
 
+
 		$.Upload.options = $.extend( $.Upload.options, options)
 
 		element 	 	= $(element)[0];
@@ -93,7 +94,7 @@ $('#confirmation-assessment--input-upload').on('change', function(event){
 			{
 				if( $.Upload.test_size(b.size) )
 				{
-					$.Upload.append($(element).attr('name'), b)
+					$.Upload.append($(element).attr('name'), b, $(element).attr('strict'))
 					.done(function(res){
 						def.resolve(res);
 						promises.push(def);
@@ -127,16 +128,20 @@ $('#confirmation-assessment--input-upload').on('change', function(event){
 	{
 
 		var i = [];
+		console.log( $.Upload.records[name] )
 		if( $.Upload.records[name] )
 		{
 
 			$.each( $.Upload.records[name], function(a,b){
 				var expl 	= a.split('-');
-				expl		= expl.pop();
-				i.push(expl);
+				if(expl.length > 1)
+				{
+					expl		= expl.pop();
+					i.push(expl);
+				}
 			});
 
-			return parseInt(i.pop()) + 1;
+			return i.length > 0? parseInt(i.pop()) + 1 : 1;
 		
 		}else
 		{
@@ -144,7 +149,7 @@ $('#confirmation-assessment--input-upload').on('change', function(event){
 		}
 	}
 
-	$.Upload.append = function(name, file)
+	$.Upload.append = function(name, file, strict)
 	{
 		var deff 	= $.Deferred();
 
@@ -155,9 +160,15 @@ $('#confirmation-assessment--input-upload').on('change', function(event){
 		{
 			$.Upload.records[name] = {}
 		}
-		$.Upload.records[name][$.Upload.options.name+'-'+key] = file;
+		if(strict)
+		{
+			$.Upload.records[name][name] = file;
+		}else
+		{
+			$.Upload.records[name][name+'-'+key] = file;
+		}
 
-		deff.resolve( $.Upload.records[name][$.Upload.options.name+'-'+key] );
+		deff.resolve( $.Upload.records[name][name+'-'+key] );
 
 		return $.when(deff.promise() );
 
@@ -305,42 +316,41 @@ $('#confirmation-assessment--input-upload').on('change', function(event){
 			$.each($.Upload.records, function(a,b){
 
 				$.each(b, function(c,d){
-					console.log(c,d)
 					fData.append(c,d);
 				})
 			})
 
-			if(options.data)
-			{
-				$.each(options.data, function(a,b){
-					fData.append(a,b);
-				})
-			}
-
-			$.ajax({
-			    url 	: options.url,
-			    data 	: fData,
-			    cache 	: false,
-			    contentType : false,
-			    processData : false,
-			    type 		: 'POST',
-			    success 	: function(data){
-			    	deff.resolve(data);
-			    	$.Upload.reset();
-			    },
-			    error: function(data)
-			    {
-			    	deff.resolve(data);
-			    }
-
-			});
-
 		}
 		else
 		{
-			console.error('no url defined! or no file uploaded.');
-			return false;
+			console.error('no url defined! or no file uploaded. sent data without file!');
 		}
+
+		if(options.data)
+		{
+			$.each(options.data, function(a,b){
+				b = typeof b == 'object'? JSON.stringify(b) : b;
+				fData.append(a,b);
+			})
+		}
+
+		$.ajax({
+		    url 	: options.url,
+		    data 	: fData,
+		    cache 	: false,
+		    contentType : false,
+		    processData : false,
+		    type 		: 'POST',
+		    success 	: function(data){
+		    	deff.resolve(data);
+		    	$.Upload.reset();
+		    },
+		    error: function(data)
+		    {
+		    	deff.reject(data);
+		    }
+
+		});
 
 		return deff.promise();
 	}

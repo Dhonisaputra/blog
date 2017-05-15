@@ -19,14 +19,14 @@ class Files_model extends CI_Model
 	*/
 	public function data_files($select = '*', $where = array())
 	{
-		/*$this->db->select($select);
+		$this->db->select($select);
 		$this->db->from('master_files');
 		if(count($where) > 0)
 		{
 			$this->db->where($where);
 		}
 		$data = $this->db->get();
-		return $data;*/
+		return $data;
 	}
 
 	public function get_file($file_id = 0)
@@ -59,6 +59,38 @@ class Files_model extends CI_Model
 
 		foreach ($files as $key => $value) {
 			$this->upload->initialize($config);
+
+			if ( ! $this->upload->do_upload($key))
+			{
+				$error = array('error' => $this->upload->display_errors());
+				echo header('http/1.0 '.$error.' 500');
+			}
+			else
+			{
+				$file = $this->upload->data();
+				$file['file_url'] = base_url($config['upload_path'].$file['file_name']);
+				$insert_id = $this->save_file($file);
+				$file['id_files'] = $insert_id;
+				$key = explode('-', $key);
+				if(count($key) > 1)
+				{
+					array_pop($key);
+				}
+				$key = implode('-', $key);
+				$file_uploaded[$key][] = $file;
+			}
+		}
+
+		return $file_uploaded;
+	}
+
+	public function ck_upload($config = array(), $files)
+	{
+		$file_uploaded = array();
+		$this->load->library('upload');
+
+		foreach ($files as $key => $value) {
+			$this->upload->initialize($config);
 			
 
 			if ( ! $this->upload->do_upload($key))
@@ -69,6 +101,7 @@ class Files_model extends CI_Model
 			else
 			{
 				$file = $this->upload->data();
+				$file['file_url'] = base_url($config['upload_path'].$file['file_name']);
 				$insert_id = $this->save_file($file);
 				$file['id_files'] = $insert_id;
 				array_push($file_uploaded, $file);

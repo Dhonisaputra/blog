@@ -1,55 +1,111 @@
-<link rel="stylesheet" type="text/css" href="assets/assets/css/style.home.css">
-<div class="banner standard-banner"></div>
-<ul class="menu standard-menu" ng-include="'templates/clients/navbar.html'"></ul>
-<div class="container-fluid container--content-box">
-	<div class="col-md-12">	
-		<!-- <div ng-include="'templates/clients/post.trending.horizontal.html'"></div> -->
-	</div>
-	<div class="col-md-8">
+<style type="text/css">
+	body
+	{
+		background-color: #f2f2f2;
+	}
+	#article-section
+	{
+		background-color: white;
+		border-left: 1px solid #eee;
+		min-height: 100vh;
+		padding-top: 10px;
+		padding-bottom: 50px;
+		margin-bottom: 50px;
+	}
+	#article-section p
+	{
+		font-style: normal !important;
+	}
+	#article-section a
+	{
+		text-decoration: underline !important;
+	}
+	#article-section .list-group-event
+	{
+		border-top: 1px solid #eee;
+		padding: 20px 5px;
+		word-break: break-all;
 
-		<div class="panel panel-default" id="list-post">
-			<div class="panel-body content-article">
-				<div ng-include="'article.sct'" ng-article-open ng-article-parameters="id_article" ng-article-name="post"></div>
-				<hr>
-				<!-- <div ng-include="'share.sct'"></div> -->
-				<!-- <hr> -->
-				<div>
-					<!-- <section id="article-comments" ng-comment ng-comment-name="comment_article" ng-comment-data="{{post.comments}}"></section> -->
+	}
+	#article-section .list-group-event *
+	{
+		font-size: 13px;
+	}
+
+	#article-section .event-cover
+	{
+		width: 100%;
+		height: 500px;
+		background-position: center;
+		background-size: contain;
+		background-repeat: no-repeat;
+		border-bottom: 1px solid #eee;
+	}
+	#article-section #event-components
+	{
+		min-height: 100vh;
+	}
+	#article-section #article-content
+	{
+		border-right: 1px solid #eee;
+	}
+		.badge-tag
+		{
+			padding: 3px;
+			background-color: #446CB3;
+			border-radius: 2px; 
+			margin-right: 5px;
+			color: white;
+			margin-bottom: 5px;
+		}
+</style>
+<ng-include src="'templates/cplusco_global_client/event_list.html'"></ng-include>
+
+<div class="container" ng-moment id="article-section">
+
+	<div ng-include="'article.sct'" ng-article-open ng-article-parameters="id_article" ng-article-name="post"></div>
+
+</div>
+<script type="text/ng-template" id="article.sct">
+	<div class="col-md-9" id="article-content">
+		<div class="event-cover" style="background-image: url({{post.related.event.event_photo_url}})" ng-if="post.article_type == 'event'"></div>
+		<h1>{{post.title}}</h1>
+		<div ng-bind-html="post.trusted_content" article-body></div>
+	</div>
+	<div class="col-md-3" id="event-components" style="padding-top: 15px;" ng-if="post.article_type == 'event'">
+		<div class="list-group">
+			<div class="list-group-event">
+				<i class="glyphicon glyphicon-time"></i> <span >{{moment.formatUnix(post.related.event.event_start*1000, undefined, 'DD-MMM HH:mm')}}</span> <span ng-if="moment(post.related.event.event_end).isValid()">- {{moment.formatUnix(post.related.event.event_end*1000, undefined, 'DD-MMM HH:mm')}}</span>
+			</div>
+			<div class="list-group-event">
+				<i class="glyphicon glyphicon-map-marker"></i> <span>{{post.related.event.event_location}}</span>
+			</div>
+			<div class="list-group-event">
+				<i class="glyphicon glyphicon-credit-card"></i> 
+				<span ng-if="post.related.event.event_ticket != '' || post.related.event.event_ticket">{{post.related.event.event_ticket}}</span> 
+				<span ng-if="!post.related.event.event_ticket">Buy Ticket unavailable</span>
+			</div>
+			<div class="list-group-event"  ng-if="post.tag_item.length > 0">
+				
+				<i class="glyphicon glyphicon-tags"></i> <label>Event Tag</label>
+				<div style="margin-top: 10px;">
+					<span class="badge-tag" ng-repeat="tag in post.tag_item" ng-if="tag != ''">{{tag}}</span>
 				</div>
 			</div>
-			
-		</div>
-	</div>
-	<div class="col-md-4">
-		<div class="list-group sidebar">
-			<div class="list-group-item header">Stay Connected</div>
-			<div class="list-group-item body">Facebook</div>
-			<div class="list-group-item body">Twitter</div>
-			<div class="list-group-item body">Instagram</div>
-		</div>
-		<div class="list-group sidebar">
-			<div class="list-group-item header">Recent Post</div>
-			<div class="list-group-item body" ng-include="'templates/clients/sidebar.recentnews.html'">
+			<div class="list-group-event"  ng-if="post.related.attachment.length > 0">
+				<i class="glyphicon glyphicon-duplicate"></i> <label>File Attachments</label><br>
+				
+				<div style="margin-top: 10px;">
+					<span class="" ng-repeat="file in post.related.attachment"><i class="glyphicon glyphicon-download-alt"></i> <a href="{{file.file_url}}">{{file.file_name}}</a></span>
+				</div>
 			</div>
-		</div>
+			<div class="list-group-event"  ng-if="post.related.event.reference_link && post.related.event.reference_link.length > 0">
+				<label>Related Links</label><br> 
+				<div style="margin-top: 10px;">
+					<div class="" ng-repeat="link in post.related.event.reference_link" style="margin-bottom: 5px;"><i class="glyphicon glyphicon-link"></i> <a href="{{link.reference}}">{{link.label}}</a></div>
+				</div>
+
+			</div>
+		</div>	
 	</div>
-	
-	
-</div>
-
-<script type="text/ng-template" id="share.sct">
-	<section id="article-share">
-		<ul>
-			<li>Facebook</li>
-			<li>Twitter</li>
-			<li>Google Plus</li>
-			<li>Tumblr</li>
-		</ul>
-	</section>
-</script>
-
-
-<script type="text/ng-template" id="article.sct">
-	<h1>{{post.title}}</h1>
-	<div ng-bind-html="post.trusted_content" article-body></div>
 </script>

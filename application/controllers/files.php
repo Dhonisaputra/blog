@@ -37,7 +37,7 @@ class Files extends CI_Controller
 		$config['upload_path'] 		= 'locker/files/';
 		$config['encrypt_name']		= TRUE;
 		$config['allowed_types'] 	= '*';
-		$response = $this->files_model->upload($config, $_FILES)[0];
+		$response = $this->files_model->ck_upload($config, $_FILES)[0];
 
 		// Check the $_FILES array and save the file. Assign the correct path to a variable ($url).
 		$url = base_url('locker/files/'.$response['file_name']);
@@ -51,7 +51,7 @@ class Files extends CI_Controller
 		$config['upload_path'] 		= 'locker/files/';
 		$config['encrypt_name']		= TRUE;
 		$config['allowed_types'] 	= '*';
-		$response = $this->files_model->upload($config, $_FILES)[0];
+		$response = $this->files_model->ck_upload($config, $_FILES)[0];
 
 		$return = array(
 				'uploaded' 	=> isset($response['id_files'])? 1 : 0,

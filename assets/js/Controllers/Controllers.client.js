@@ -1,5 +1,5 @@
 window.mainApp
-.controller('home_controller', function($scope,$config, $posts) {	
+.controller('home_controller', function($scope,$config, $posts, $location) {	
 	// console.log($config.base_url('posts/get_post')); return false;
 	
 	$scope.club_slide_params = {
@@ -131,18 +131,128 @@ window.mainApp
 
     $.fn.socialfeed(socialfeed_fb_event)
 
+    $scope.openEvent = function(event)
+    {
+    	var href = 'open/article/event/'+event.id_article
+    	$location.url(href)
+    }
 
 })
 .controller('controller.event.index', function($scope,$config, $posts) {
 	
 })
 
-.controller('post.opened', function($scope,$config, $posts, $routeParams, $blogconfig, $sce, F_Comment,F_Tools ){
+.controller('post.opened', function($scope,$config, $posts, $routeParams, $blogconfig, $sce, F_Comment,F_Tools, $location ){
 	$scope.params = $routeParams;
 
 	$scope.comment = {}
 	$scope.comment.comment_content = '';
 
+	$scope.club_slide_params = {
+		slidesToShow: 5,
+		slidesToScroll: 5,
+		autoplay: true,
+		autoplaySpeed: 3000,
+		arrows: false,   
+		dots: true,
+		infinite: true,
+		// speed: 1000,
+		// fade: true,
+		cssEase: 'linear',
+		pauseOnHover:false,
+		responsive: [
+		{
+			breakpoint: 1025,
+			settings: {
+				slidesToShow: 3,
+				slidesToScroll: 3,
+				infinite: true,
+			}
+		},
+		{
+			breakpoint: 768,
+			settings: {
+				slidesToShow: 2,
+				slidesToScroll: 2,
+				infinite: true,
+			}
+		},
+		{
+			breakpoint: 480,
+			settings: {
+				slidesToShow: 1,
+				slidesToScroll: 1
+			}
+		}]
+	}
+
+	$scope.event_slick_params = {
+		slidesToShow: 4,
+	    slidesToScroll: 4,
+	    arrows: false,
+	    infinite: false,
+	    dots: true,
+	  	responsive: [
+	      {
+	        breakpoint: 1280,
+	        settings: {
+	          slidesToShow: 4,
+	          slidesToScroll: 4,
+	        }
+	      },
+	      {
+	        breakpoint: 600,
+	        settings: {
+	          slidesToShow: 2,
+	          slidesToScroll: 2
+	        }
+	      },
+	      {
+	        breakpoint: 480,
+	        settings: {
+	          slidesToShow: 1,
+	          slidesToScroll: 1
+	        }
+	      }]
+	}
+	$scope.event_slick_socialfeed = {
+		slidesToShow: 4,
+	    slidesToScroll: 4,
+	    arrows: false,
+	    dots:true,
+	    infinite: false,
+	  	responsive: [
+	      {
+	        breakpoint: 1280,
+	        settings: {
+	          slidesToShow: 3,
+	          slidesToScroll: 3,
+	        }
+	      },
+	      {
+	        breakpoint: 600,
+	        settings: {
+	          slidesToShow: 2,
+	          slidesToScroll: 2
+	        }
+	      },
+	      {
+	        breakpoint: 480,
+	        settings: {
+	          slidesToShow: 1,
+	          slidesToScroll: 1
+	        }
+	      }
+	      // You can unslick at a given breakpoint now by adding:
+	      // settings: "unslick"
+	      // instead of a settings object
+	    ]
+	}
+	 $scope.openEvent = function(event)
+    {
+    	var href = 'open/article/event/'+event.id_article
+    	$location.url(href)
+    }
 	/*$posts.get('posts.id_post ='+$routeParams.id, function(res){
 		$scope.post = res[0]
 		$scope.title = $scope.post.title;

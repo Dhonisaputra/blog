@@ -298,7 +298,7 @@ window.mainApp
 	}
 })
 // event
-.controller('controller.post.new.event', function($scope, F_Config){
+.controller('controller.post.new.event', function($scope, F_Config, $location){
 	$scope.event_new = {}
 	$scope.ext_source = []
 	$scope.ext_attachment = []
@@ -316,10 +316,8 @@ window.mainApp
 		$.Upload( ui )
 		.done(function(res){
 			// tulis data file uploaded
-				console.log(res)
 			$.Upload.read_image(ui[0])
 			.done(function(resPrev){
-				console.log(res, resPrev)
 				$scope.event_preview_photo = resPrev.target.result
 				$scope.$apply();
 			})
@@ -330,10 +328,9 @@ window.mainApp
 	})
 	$('#event-upload-attachment').on('change', function(event){
 		var ui = $(this)
-		$.Upload( ui )
+		$.Upload( ui, {name:'attach'} )
 		.done(function(res){
 			// tulis data file uploaded
-			console.log(res)
 			$scope.ext_attachment.push(res[0]);
 			$scope.$apply()
 
@@ -342,13 +339,48 @@ window.mainApp
 		})
 	})
 
-	$('.event_time').datetimepicker({
+	$('.event_time:nth(0)').datetimepicker({
 	  datepicker:false,
-	  format:'H:i'
+	  format:'H:i',
+	  step: 15,
+	  formatTime: 'H:i',
+	  minTime: 0,
+	  onShow:function( ct ){
+		   this.setOptions({
+		   		maxTime: $('.event_time:nth(1)').val()? $('.event_time:nth(1)').val():false
+		   })
+	  	},
 	});
-	$('.event_date').datetimepicker({
+	$('.event_time:nth(1)').datetimepicker({
+	  datepicker:false,
+	  format:'H:i',
+	  step: 15,
+	  formatTime: 'H:i',
+	  onShow:function( ct ){
+		   this.setOptions({
+		   		minTime: $('.event_time:nth(0)').val()? $('.event_time:nth(0)').val().toString():0
+		   })
+	  	},
+	});
+	$('.event_date:nth(0)').datetimepicker({
 	  	timepicker:false,
-	  	format:'m/d/Y'
+	  	format:'m/d/Y',
+	  	formatDate: 'm/d/Y',
+	  	onShow:function( ct ){
+		   this.setOptions({
+		   		maxDate: $('.event_date:nth(1)').val()? $('.event_date:nth(1)').val():false
+		   })
+	  	},
+	});
+	$('.event_date:nth(1)').datetimepicker({
+	  	timepicker:false,
+	  	format:'m/d/Y',
+	  	formatDate: 'm/d/Y',
+	  	onShow:function( ct ){
+		   this.setOptions({
+		   		minDate: $('.event_date:nth(0)').val()? $('.event_date:nth(0)').val():false
+		   })
+	  	},
 	});
 
 	$scope.create_event = function()
@@ -360,7 +392,6 @@ window.mainApp
 			data: $scope.event_new
 		})
 		.done(function(res){
-			console.log(res)
 			Snackbar.show('Event has been created!');
 			window.location.href ='#/event'
 		})
@@ -372,7 +403,7 @@ window.mainApp
 	{
 		if($scope.source_label && $scope.source_link)
 		{
-			$scope.ext_source.push({label:$scope.source_label, source: $scope.source_link});
+			$scope.ext_source.push({label:$scope.source_label, reference: $scope.source_link});
 			$scope.source_label = ''
 			$scope.source_link = ''
 		}
@@ -415,6 +446,15 @@ window.mainApp
 	}
 })
 .controller('controller.post.edit.event', function($scope, F_Event, F_Config){
+	$scope.start_date = ''
+	$scope.end_date = ''
+	$scope.start_time = ''
+	$scope.end_time = ''
+	$scope.event_new = {}
+	$scope.ext_source = []
+	$scope.ext_attachment = []
+	$scope.source = '';
+
 	$('#event-upload-photo').on('change', function(event){
 		var ui = $(this)
 		$.Upload( ui )
@@ -431,6 +471,62 @@ window.mainApp
 			ui.val('');
 		})
 	})
+	$('#event-upload-attachment').on('change', function(event){
+		var ui = $(this)
+		$.Upload( ui )
+		.done(function(res){
+			// tulis data file uploaded
+			$scope.ext_attachment.push(res[0]);
+			$scope.$apply()
+
+			// reset input type file
+			ui.val('');
+		})
+	})
+
+	$('.event_time:nth(0)').datetimepicker({
+	  datepicker:false,
+	  format:'H:i',
+	  step: 15,
+	  formatTime: 'H:i',
+	  minTime: 0,
+	  onShow:function( ct ){
+		   this.setOptions({
+		   		maxTime: $('.event_time:nth(1)').val()? $('.event_time:nth(1)').val():false
+		   })
+	  	},
+	});
+	$('.event_time:nth(1)').datetimepicker({
+	  datepicker:false,
+	  format:'H:i',
+	  step: 15,
+	  formatTime: 'H:i',
+	  onShow:function( ct ){
+		   this.setOptions({
+		   		minTime: $('.event_time:nth(0)').val()? $('.event_time:nth(0)').val().toString():0
+		   })
+	  	},
+	});
+	$('.event_date:nth(0)').datetimepicker({
+	  	timepicker:false,
+	  	format:'m/d/Y',
+	  	formatDate: 'm/d/Y',
+	  	onShow:function( ct ){
+		   this.setOptions({
+		   		maxDate: $('.event_date:nth(1)').val()? $('.event_date:nth(1)').val():false
+		   })
+	  	},
+	});
+	$('.event_date:nth(1)').datetimepicker({
+	  	timepicker:false,
+	  	format:'m/d/Y',
+	  	formatDate: 'm/d/Y',
+	  	onShow:function( ct ){
+		   this.setOptions({
+		   		minDate: $('.event_date:nth(0)').val()? $('.event_date:nth(0)').val():false
+		   })
+	  	},
+	});
 
 	$scope.ckeditor_event = {
 		codeSnippet_theme: 'monokai_sublime',
@@ -446,6 +542,7 @@ window.mainApp
 			title 		: $scope.event_edit.title,
 			content 	: $scope.ckeditor['ckeditor_content'].val(),
 			location 	: $scope.event_edit.related.event.event_location,
+			id_event 	: $scope.event_edit.related.event.id_event,
 			event_photo_url 	: $scope.event_edit.related.event.event_photo_url,
 			event_photo 	: $scope.event_edit.related.event.event_photo,
 			lat 		: $scope.event_edit.related.event.event_location_lat,
@@ -453,26 +550,47 @@ window.mainApp
 			ticket_url 	: $scope.event_edit.related.event.event_ticket_url,
 			post_tag 	: $scope.event_edit.post_tag,
 			use_latlng 	: $scope.event_edit.use_latlng,
+			event_start_date : $('.event_date:nth(0)').val(),
+			event_start_time : $('.event_time:nth(0)').val(),
+			event_end_date : $('.event_date:nth(1)').val(),
+			event_end_time : $('.event_time:nth(1)').val(),
 			post_status : 'publish',
 		}
-		console.log(data)
+		data.external_source = $scope.event_edit.related.event.reference_link
+
+		console.log(data, $scope)
 		var sendData;
-		if(Object.keys($.Upload.records).length > 0)
-		{
-			sendData = $.Upload.submit({
-				url: F_Config.server_url('event/update_event'),
-				data: data
-			})
-		}else
-		{
-			sendData = $.post(F_Config.server_url('event/update_event'), data)
-		}
+		sendData = $.Upload.submit({
+			url: F_Config.server_url('event/update_event'),
+			data: data
+		})
 		sendData.done(function(res){
 			console.log(res)
+			swal('Success', 'Event updated', 'success');
 		})
 		.fail(function(res){
+			swal('Error', 'Event not updated', 'error');
 			console.log(res)
 		})
+	}
+	$scope.tambah_external_reference = function()
+	{
+		if($scope.source_label && $scope.source_link)
+		{
+			$scope.event_edit.related.event.reference_link.push({label:$scope.source_label, reference: $scope.source_link});
+			$scope.source_label = ''
+			$scope.source_link = ''
+		}
+	}
+
+	$scope.remove_external_reference = function(index)
+	{
+		removeArray($scope.ext_source, index)
+	}
+	$scope.remove_external_attachment = function(item, index)
+	{
+		removeArray($scope.ext_attachment, index)
+		$.Upload.remove('event_attachment', item.key)
 	}
 })
 .controller('controller.administrator.logout', function($scope, $owner, $posts, $routeParams, F_Config){

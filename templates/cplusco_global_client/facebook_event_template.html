@@ -1,11 +1,21 @@
 <div ng-slick ng-slick-parameters="{{event_slick_params}}">
+
 	
+
 	<div class="event event-box" ng-repeat="it in eventlist | sortBy:'related.event.event_start':'i' " ng-event>
+
 		{{event.set_nearly_event(eventlist)}}
-		<div href="" class="event-cover" style="background-image: url({{it.related.event.event_photo_url}})" onclick="window.open($(this).attr('href'), '_blank')"></div>
+
+		<div href="" class="event-cover" style="background-image: url({{it.related.event.event_photo_url}})" ng-click="openEvent(it)"></div>
+
 		<div class="event-date">{{moment.formatUnix(it.related.event.event_start*1000, undefined, 'DD MMM YYYY')}}</div>
+
 		<div class="event-content">
+
 			<div class="event-title">{{it.title}}</div>
+
 		</div>
+
 	</div>
+
 </div>

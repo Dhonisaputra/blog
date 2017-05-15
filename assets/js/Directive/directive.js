@@ -309,7 +309,6 @@ window.mainApp
                     }
                     scope[articleName] = res;
                     scope.$apply()
-                    console.log(scope)
                 },
                 function(res)
                 {
@@ -394,7 +393,7 @@ window.mainApp
 
     return {
         link: function(scope, element, attrs) {
-            scope.moment = F_Moment;
+            scope.moment = $.extend(moment, F_Moment);
         }
     };
 }])

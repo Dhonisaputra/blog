@@ -124,27 +124,55 @@ class Article extends CI_Controller
 	{
 		$this->load->model('comment_model');
 		$this->load->model('event_model');
+		$this->load->model('files_model');
 		
+		// get data $_POST
 		$post = $this->input->post();
 		$post['where'] = isset($post['where'])? $post['where'] : '';
+		
 		$data = $this->model_post->get_post('articles.*, GROUP_CONCAT(categories.id_category) as group_category_id,  group_concat(categories.name) as group_category_name', $post['where'])->result_array();
+		
 		$rex = '/<img[^>]+src="([^">]+)/';
 		foreach ($data as $key => $value) {
 			$data[$key]['tag_item'] 		= explode(',', $value['post_tag']);
             $data[$key]['categories_id'] 	= explode(',', $value['group_category_id']);
             $data[$key]['categories_name'] 	= explode(',', $value['group_category_name']);
             $data[$key]['comments'] 		= $this->comment_model->get_comment('*', array('id_article' => $value['id_article']))->result_array();
+            
+			// search html tag <img> and get the Src;
             preg_match_all($rex, $value['content'], $matches);
             if(isset($matches[1]))
             {
             	$data[$key]['images_item'] = $matches[1];
             }
+            // ----------------------------------------------------
+    		
+    		// Explode article attachment.
+    		$file_attachment = explode(',', $value['article_attachment']);
+    		
+    		// foreach file attachment.
+    		foreach ($file_attachment as $c => $d) {
+    			$files = $this->files_model->data_files('file_url, file_name, original_name, id_files', array('id_files' => $d))->result_array();
+    			if(count($files) > 0)
+    			{
+    				$data[$key]['related']['attachment'] = $files;
+    			}
+    		}
+    		// -----------------------------------------------------
+
 
             switch ($value['article_type']) {
             	case 'event':
             		$relatedEvent = $this->event_model->get_event('*', array('id_article' => $value['id_article']));
             		$length = count( $relatedEvent->result_array() );
             		$data[$key]['related']['event'] = ($length > 0)? $relatedEvent->row_array() : array();
+            		$nowunix = strtotime(date('Y-m-d'));
+            		foreach ($data[$key]['related']['event'] as $c => $d) {
+	            		$ref = $this->event_model->get_event_reference_link('label,reference', array('id_event' => $data[$key]['related']['event']['id_event']))->result_array();
+	            		$data[$key]['related']['event']['reference_link'] = $ref;
+	            		$data[$key]['related']['event']['is_start'] = ($nowunix > $data[$key]['related']['event']['event_start'])? true : false;
+	            		$data[$key]['related']['event']['is_over'] = ($nowunix > $data[$key]['related']['event']['event_end'] || (is_null($data[$key]['related']['event']['event_end']) && $data[$key]['related']['event']['is_start']) )? true : false;
+            		}
             		break;
             	
             	default:
