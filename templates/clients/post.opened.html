@@ -82,8 +82,8 @@
 			</div>
 			<div class="list-group-event">
 				<i class="glyphicon glyphicon-credit-card"></i> 
-				<span ng-if="post.related.event.event_ticket != '' || post.related.event.event_ticket">{{post.related.event.event_ticket}}</span> 
-				<span ng-if="!post.related.event.event_ticket">Buy Ticket unavailable</span>
+				<span ng-if="post.related.event.event_ticket != ''"><a href="{{post.related.event.event_ticket_url}}" target="__blank">Buy Ticket</a></span> 
+				<span ng-if="post.related.event.event_ticket == ''">Buy Ticket unavailable</span>
 			</div>
 			<div class="list-group-event"  ng-if="post.tag_item.length > 0">
 				

@@ -82,6 +82,13 @@
 		<label>Attachment</label> 
 		<input type="file" name="event_attachment" id="event-upload-attachment" class="form-control">
 		<div>
+			<label>Existed File</label> 
+			<ul>
+				<li ng-repeat="item in event_edit.related.attachment"> {{item.original_name}} <a ng-click="remove_existed_external_attachment(item, $index)" >remove</a></li>
+			</ul>
+		</div>
+		<div ng-if="ext_attachment.length > 0">
+			<label>New Uploaded File</label> 
 			<ul>
 				<li ng-repeat="item in ext_attachment"> {{item.name}} <a ng-click="remove_external_attachment(item, $index)" >remove</a></li>
 			</ul>

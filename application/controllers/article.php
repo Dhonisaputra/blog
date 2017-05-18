@@ -49,7 +49,7 @@ class Article extends CI_Controller
 				'id_user' 	=> $id_user,
 				'title' 	=> $post['article']['title'],
 				'content' 	=> $post['article']['content'],
-				'post_tag' 	=> $post['article']['tag'],
+				'post_tag' 	=> isset($post['article']['tag'])? $post['article']['tag'] : '',
 				'schedule_publish' => isset($post['article']['schedule_publish']) ? $post['article']['schedule_publish'] : null,
 				'post_status' => $post['article']['post_status'],
 				'published_time' => $post['article']['post_status'] == 'publish' ? date('Y-m-d H:i:s') : null,
@@ -151,13 +151,14 @@ class Article extends CI_Controller
     		$file_attachment = explode(',', $value['article_attachment']);
     		
     		// foreach file attachment.
-    		foreach ($file_attachment as $c => $d) {
-    			$files = $this->files_model->data_files('file_url, file_name, original_name, id_files', array('id_files' => $d))->result_array();
-    			if(count($files) > 0)
-    			{
-    				$data[$key]['related']['attachment'] = $files;
-    			}
-    		}
+			$this->db->select('file_url, file_name, original_name, id_files');
+			$this->db->from('master_files');
+			$this->db->where_in('id_files', $file_attachment);
+			$files = $this->db->get()->result_array();
+			if(count($files) > 0)
+			{
+				$data[$key]['related']['attachment'] = $files;
+			}
     		// -----------------------------------------------------
 
 

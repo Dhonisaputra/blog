@@ -16,7 +16,7 @@ class Files extends CI_Controller
 	{
 		$this->load->helper('download');
 
-		$file = $this->files_model->get_file($file)[0];
+		$file = $this->files_model->get_file($file);
 		$data = file_get_contents($file['file_path'].$file['file_name']); // Read the file's contents
 		$name = $file['client_name'];
 		force_download($name, $data);

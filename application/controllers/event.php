@@ -128,9 +128,12 @@ class Event extends CI_Controller
 
 		$data = $this->input->post();
 		$data['external_source'] = json_decode($data['external_source'],true);
+		$data['existed_attachment'] = json_decode($data['existed_attachment'],true);
 
 		// Upload
 		// ----------------------------------------------------------------------------------------
+		$attach = array();
+		$existed_attach = array();
 		if(isset($_FILES) && count($_FILES) > 0)
 		{
 			$id_user = $this->session->userdata('id_user');
@@ -148,9 +151,23 @@ class Event extends CI_Controller
 				$attach = array_map(function($res){
 					return $res['id_files'];
 				}, $response['event_attachment']);
-				$attach = implode(',', $attach);
+				
 			}
 		}
+		if( isset($data['existed_attachment']) && 
+			!empty($data['existed_attachment']) &&
+			is_array($data['existed_attachment']) &&
+			count($data['existed_attachment']) > 0
+		)
+		{
+			$existed_attach = array_map(function($res){
+				return $res['id_files'];
+			}, $data['existed_attachment']);
+		}
+
+		$attach = array_merge($existed_attach, $attach);
+		$attach = implode(',', $attach);
+		
 		// ----------------------------------------------------------------------------------------
 
 		// Check the $_FILES array and save the file. Assign the correct path to a variable ($url).
@@ -206,4 +223,13 @@ class Event extends CI_Controller
 		$this->db->delete('articles', $post['where']); 
 		$this->db->delete('events', $post['where']); 
 	}
+	public function remove_event_attachment()
+	{
+		$this->load->model('files_model');
+		$this->load->model('model_post');
+		$post = $this->input->post();
+
+		$this->files_model->remove_files($post['where']);
+	}
+
 }

@@ -557,6 +557,7 @@ window.mainApp
 			post_status : 'publish',
 		}
 		data.external_source = $scope.event_edit.related.event.reference_link
+		data.existed_attachment = $scope.event_edit.related.attachment
 
 		console.log(data, $scope)
 		var sendData;
@@ -565,7 +566,7 @@ window.mainApp
 			data: data
 		})
 		sendData.done(function(res){
-			console.log(res)
+			window.location.reload();
 			swal('Success', 'Event updated', 'success');
 		})
 		.fail(function(res){
@@ -581,6 +582,34 @@ window.mainApp
 			$scope.source_label = ''
 			$scope.source_link = ''
 		}
+	}
+
+	$scope.remove_existed_external_attachment = function(item, index)
+	{
+		swal({
+		  title: "Are you sure to delete this file?",
+		  text: "You will not be able to recover this file!",
+		  type: "warning",
+		  showCancelButton: true,
+		  confirmButtonColor: "#DD6B55",
+		  confirmButtonText: "Yes, delete it!",
+		  closeOnConfirm: true
+		},
+		function(){
+			removeArray($scope.event_edit.related.attachment, index)
+			$scope.$apply()
+			$.post(F_Config.server_url('event/remove_event_attachment'), {where:{id_files: item.id_files}})
+			.done(function(res){
+				console.log(res);
+				Snackbar.show('File Removed!');
+			})
+			.fail(function(res){
+				console.log(res);
+				$scope.event_edit.related.attachment.push(item);
+				$scope.$apply()
+				swal('Failed on remove file', 'Remove file was failed. please check your internet connection.', 'error');
+			})
+		});
 	}
 
 	$scope.remove_external_reference = function(index)
